@@ -1,15 +1,6 @@
 
-## function which updates everything
-update <- function(){
-  input$again
-  person <- input$person
-  drink <- random_drink()
-  history <- update_history(person, drink)
-}
-
-
 ## choose random drink
-random_drink <- function(){
+random_drink <- function(drinks){
   drink <- sample(drinks, size = 1)
   return(drink)
 }
@@ -17,18 +8,7 @@ random_drink <- function(){
 
 
 
-update_history <- function(person, drink){
-  drinks_history <- read.csv(filename, stringsAsFactors = FALSE, header = TRUE)
-  time_passed <- Sys.time() - started_game_at
-  new_drinks <-  c(person, drink, time_passed)
-  drinks_history <- rbind(drinks_history, new_drinks)
-  colnames(drinks_history) <- c("Person", "Drink", "Time")
-  write.csv(drinks_history, file = filename, row.names = FALSE)
-}
-
-
-
-get_history <- function(only_last = FALSE){
+get_history <- function(filename, only_last = FALSE){
   history <- read.csv(filename, header = TRUE, stringsAsFactors = FALSE)
   if (only_last) {
     return(history[nrow(history), ])
@@ -37,8 +17,8 @@ get_history <- function(only_last = FALSE){
   }
 }
 
-plot_history <- function(){
-  history <- get_history()
+plot_history <- function(filename){
+  history <- get_history(filename)
   timeline <- history_to_timeline(history)
   ## build the graphic
   p <- ggplot(timeline) + geom_line(aes(x = Time, y = count, group = Person, colour = Person))
