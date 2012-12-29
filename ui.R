@@ -10,12 +10,12 @@
 shinyUI(pageWithSidebar(
 
   # Application title
-  headerPanel("Random"),
+  headerPanel("Drink tracker"),
 
   sidebarPanel(
-    selectInput("person", "Person die grad dran ist", choices = persons),
+    selectInput("person", "Choose person", choices = persons),
     br(),
-    actionButton("again", "Muss nochmal")
+    actionButton("again", "Drink!")
     ),
 
   mainPanel(h3(textOutput("text")) ,

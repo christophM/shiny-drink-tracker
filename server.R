@@ -7,8 +7,6 @@ library(shiny)
 library("plyr")
 library("ggplot2")
 
-drinks <- c("Bier", "Vodka", "Rum")
-
 
 ## take time to give a unique filename
 now <- gsub(" ", "_", Sys.time())
@@ -32,12 +30,12 @@ shinyServer(function(input, output) {
   ## function which updates everything
   update <- function(){
     input$again
-    person <- input$person
     drink <- random_drink(drinks)
-    history <- update_history(person, drink)
+    history <- update_history(drink)
   }
 
-  update_history <- function(person, drink){
+  update_history <- function(drink){
+    person <- input$person
     drinks_history <- read.csv(filename, stringsAsFactors = FALSE, header = TRUE)
     time_passed <- Sys.time() - started_game_at
     new_drinks <-  c(person, drink, time_passed)
@@ -51,9 +49,9 @@ shinyServer(function(input, output) {
   observe(update)
 
   output$text <- reactiveText(function() {
-    input
+    input$again
     last_row <- get_history(filename, only_last = TRUE)
-    paste(last_row[1], "muss", last_row[2], "trinken")
+    paste(last_row[1], "shall drink")
   })
 
   output$history <- reactiveTable(function(){
@@ -63,7 +61,6 @@ shinyServer(function(input, output) {
   })
 
   output$timeline <- reactivePlot(function(){
-    input$person
     input$again
     plot_history(filename)
   })
@@ -75,9 +72,9 @@ shinyServer(function(input, output) {
     history_to_timeline(get_history(filename))
   })
 
-  ## output$debug_time <- reactiveText(function(){
-  ##   history <- get_history()
-  ##   max(history$Time)
-  ## })
+  output$debug_time <- reactiveText(function(){
+    history <- get_history()
+    max(history$Time)
+  })
   
 })

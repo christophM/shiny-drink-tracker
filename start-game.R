@@ -1,4 +1,4 @@
-################################################################################
+###############################################################################
 ##
 ## Simply start the game application
 ##
@@ -12,7 +12,8 @@ library("shiny")
 library("shinyIncubator")
 
 
-persons <- c("next", "Heidi", "Christoph", "Desiré", "Levent", "Daniel")
+drinks <- c("Bier", "Vodka", "Rum")
+persons <- c("Heidi", "Christoph", "Desiré", "Levent", "Daniel")
 runApp("./")
 
 
