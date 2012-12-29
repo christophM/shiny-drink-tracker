@@ -1,7 +1,8 @@
 
 
 get_history <- function(filename, only_last = FALSE){
-  history <- read.csv(filename, header = TRUE, stringsAsFactors = FALSE)
+  history_var<- load(filename)
+  history <- get(history_var)
   if (only_last) {
     return(history[nrow(history), ])
   } else {

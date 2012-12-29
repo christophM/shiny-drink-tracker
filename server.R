@@ -11,12 +11,13 @@ library("ggplot2")
 ## take time to give a unique filename
 now <- gsub(" ", "_", Sys.time())
 
+
+
 ## build data.frame
-drinks_history<- matrix(ncol = 2, nrow = 0)
-colnames(drinks_history) <- c("Person",  "Time")
-drinks_history <- as.data.frame(drinks_history)
-filename = paste("./dataframes/drinks-history-", now, "csv", sep = "")
-write.csv(drinks_history, filename, row.names = FALSE)
+history<- data.frame(Person = NA, Time = NA)
+history$Person <- factor(history$Person, levels = persons)
+filename = paste("./dataframes/drinks-history-", now, ".RData", sep = "")
+save(history, file = filename)
 
 
 source("server-functions.R")
@@ -28,27 +29,6 @@ started_game_at <- as.numeric(Sys.time())
 shinyServer(function(input, output) {
   
   
-  ## function which updates everything
-  update <- function(){
-    input$again
-    input$person
-    history <- update_history()
-  }
-
-  update_history <- function(){
-    person <- input$person
-    drinks_history <- read.csv(filename, stringsAsFactors = FALSE, header = TRUE)
-    time_passed <- Sys.time() - started_game_at
-    new_drinks <-  c(person,  time_passed)
-    drinks_history <- rbind(drinks_history, new_drinks)
-    colnames(drinks_history) <- c("Person",  "Time")
-    write.csv(drinks_history, file = filename, row.names = FALSE)
-  }
-
-
-  ## data set is updated for every change of person or by hitting "Drink again"
-  observe(update)
-
   ## function which changes if either the person was changed or the again button was pushed
   ## this function can be called in other reactive functions
   ## the result is, that the other functions are updated for every change in person / again-button push
@@ -56,6 +36,25 @@ shinyServer(function(input, output) {
   something_happened <- reactive(function(){
     c(input$person, input$again)
   })
+
+  update <- function(){
+    something_happened()
+    update_history()
+  }
+  observe(update)
+
+  
+  update_history <- function(){
+    history <- get_history(filename)
+    time_passed <- Sys.time() - started_game_at
+    new_drinks <-  c(input$person,  time_passed)
+    history <- rbind(history, new_drinks)
+    ## delete the first NA
+    history <- na.omit(history)
+    save(history, file = filename)
+  }
+
+
   
   output$text <- reactiveText(function() {
     something_happened()
@@ -66,6 +65,7 @@ shinyServer(function(input, output) {
   output$history <- reactiveTable(function(){
     something_happened()
     history <- get_history(filename)
+    as.matrix(na.omit(history))
   })
 
   output$timeline <- reactivePlot(function(){
@@ -82,7 +82,8 @@ shinyServer(function(input, output) {
   output$debug_time <- reactiveText(function(){
     something_happened()
     history <- get_history(filename)
-    max(history$Time)
+   #  max(history$Time)
+    str(history)
   })
 
   output$leaderboard <- reactivePlot(function(){

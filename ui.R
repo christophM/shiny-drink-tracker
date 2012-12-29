@@ -21,7 +21,7 @@ shinyUI(pageWithSidebar(
   mainPanel(h3(textOutput("text")) ,
             tabsetPanel(
               tabPanel("Raw", tableOutput("history")),
-              tabPanel("History", plotOutput("timeline")),
+              tabPanel("Timeline", plotOutput("timeline")),
               tabPanel("Debug",
                        tableOutput("debug_timeline"),
                        textOutput("debug_time")
