@@ -3,7 +3,6 @@
 ## Server-side script for the game
 ##
 ################################################################################
-library(shiny)
 library("plyr")
 library("ggplot2")
 
@@ -12,9 +11,10 @@ library("ggplot2")
 now <- gsub(" ", "_", Sys.time())
 
 
-
 ## build data.frame
-history<- data.frame(Person = NA, Time = NA)
+history <- data.frame(Person = NA, Time = NA)
+history <- data.frame(Person = character(0), Time = numeric(0))
+
 history$Person <- factor(history$Person, levels = persons)
 filename = paste("./dataframes/drinks-history-", now, ".RData", sep = "")
 save(history, file = filename)
@@ -45,13 +45,15 @@ shinyServer(function(input, output) {
 
   
   update_history <- function(){
-    history <- get_history(filename)
-    time_passed <- Sys.time() - started_game_at
-    new_drinks <-  c(input$person,  time_passed)
-    history <- rbind(history, new_drinks)
-    ## delete the first NA
-    history <- na.omit(history)
-    save(history, file = filename)
+    if(input$person != "[choose]"){
+      history <- get_history(filename)
+      time_passed <- Sys.time() - started_game_at
+      new_drinks <-  c(input$person,  time_passed)
+      
+      ## add new drinks
+      history[nrow(history) + 1, ] <- new_drinks
+      save(history, file = filename)
+    }
   }
 
 
@@ -65,7 +67,12 @@ shinyServer(function(input, output) {
   output$history <- reactiveTable(function(){
     something_happened()
     history <- get_history(filename)
-    as.matrix(na.omit(history))
+    if(nrow(history) > 0) {
+      history
+    } else  {
+      NULL
+    }
+
   })
 
   output$timeline <- reactivePlot(function(){

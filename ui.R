@@ -4,7 +4,10 @@
 ##
 ################################################################################
 
-## library(shiny)
+
+## add choose to persons, because when the game starts the first person in the list does not
+## automatically drink
+persons <- c("[choose]", persons)
 
 # Define UI for miles per gallon application
 shinyUI(pageWithSidebar(
