@@ -14,8 +14,8 @@ plot_history <- function(filename){
   history <- get_history(filename)
   timeline <- history_to_timeline(history)
   ## build the graphic
-  p <- ggplot(timeline) + geom_line(aes(x = Time, y = count, group = Person, colour = Person))
-  print(p)
+  p <- ggplot(timeline, aes(x = Time, y = count, group = Person, colour = Person)) + geom_path()
+  print(direct.label(p, "last.bumpup"))
 }
 
 ## converts the history file to the data.frame needed to plot the timeline
@@ -31,6 +31,8 @@ history_to_timeline <- function(history){
   ## add end point of counts for everyone
   end_history <- ddply(history, .(Person), function(x) data.frame(count = max(x$count)))
   end_history$Time <- max(history$Time, na.rm = TRUE)
+  ## delete last entry, because duplicated entries causes duplicated direct labels
+  history <- history[-which(history$Time == max(history$Time)),  ]
   timeline <- rbind(history, end_history)
   timeline
 }
