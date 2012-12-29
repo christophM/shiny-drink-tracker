@@ -3,6 +3,7 @@
 get_history <- function(filename, only_last = FALSE){
   history_var<- load(filename)
   history <- get(history_var)
+  history$Time <- as.numeric(history$Time)
   if (only_last) {
     return(history[nrow(history), ])
   } else {
@@ -14,10 +15,13 @@ plot_history <- function(filename){
   history <- get_history(filename)
   timeline <- history_to_timeline(history)
   ## build the graphic
-  p <- ggplot(timeline, aes(x = Time, y = count, group = Person, colour = Person)) + geom_path()
-  print(direct.label(p, "last.bumpup"))
+  p <- ggplot(timeline, aes(x = Time, y = count, group = Person, colour = Person)) +
+    geom_path() +
+      scale_x_continuous(limits = c(0, max(1, max(history$Time) * 1.2, na.rm = TRUE)))
+  print(direct.label(p, list("last.bumpup", cex = 1.6)))
 }
 
+## Function which plots the barplot (leaderboard)
 plot_leaderboard <- function(filename){
   history <- get_history(filename)
   
@@ -28,8 +32,13 @@ plot_leaderboard <- function(filename){
   history_tab$Person <- factor(x = nrow(history_tab):1, labels = rownames(history_tab)[nrow(history_tab):1])
   history_tab
   ## build graphic and print it
-  p <- ggplot(history_tab) + geom_bar(aes(x = Person, y = count), stat = "identity") + coord_flip()
-  print(p)
+  p <- ggplot(history_tab) +
+    geom_bar(aes(x = Person, y = count, fill = count), stat = "identity") +
+      scale_y_continuous(name = "Drinks counter") +
+        scale_x_discrete(name = "") + 
+          theme(axis.text = element_text(size = 14)) + 
+            coord_flip() 
+   print(p)
 }
 
 ## converts the history file to the data.frame needed to plot the timeline
