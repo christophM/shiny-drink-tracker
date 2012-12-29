@@ -1,12 +1,4 @@
 
-## choose random drink
-random_drink <- function(drinks){
-  drink <- sample(drinks, size = 1)
-  return(drink)
-}
-
-
-
 
 get_history <- function(filename, only_last = FALSE){
   history <- read.csv(filename, header = TRUE, stringsAsFactors = FALSE)
@@ -31,14 +23,12 @@ history_to_timeline <- function(history){
   history <- ddply(history, .(Person), function(x) {x$count <- 1:nrow(x); x})
   ## add starting point for everyone
   history <- rbind(data.frame(Person = persons,
-                              Drink = rep(NA, times = length(persons)),
                               Time = rep(0, times = length(persons)),
                               count = rep(0, times = length(persons))
                               ), history)
   ## add end point of counts for everyone
   end_history <- ddply(history, .(Person), function(x) data.frame(count = max(x$count)))
   end_history$Time <- max(history$Time, na.rm = TRUE)
-  end_history$Drink <- NA
   timeline <- rbind(history, end_history)
   timeline
 }

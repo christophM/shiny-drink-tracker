@@ -11,8 +11,8 @@ library("ggplot2")
 ## take time to give a unique filename
 now <- gsub(" ", "_", Sys.time())
 
-drinks_history<- matrix(ncol = 3, nrow = 0)
-colnames(drinks_history) <- c("Person", "Drink", "Time")
+drinks_history<- matrix(ncol = 2, nrow = 0)
+colnames(drinks_history) <- c("Person",  "Time")
 drinks_history <- as.data.frame(drinks_history)
 filename = paste("./dataframes/drinks-history-", now, "csv", sep = "")
 write.csv(drinks_history, filename, row.names = FALSE)
@@ -30,17 +30,16 @@ shinyServer(function(input, output) {
   ## function which updates everything
   update <- function(){
     input$again
-    drink <- random_drink(drinks)
-    history <- update_history(drink)
+    history <- update_history()
   }
 
-  update_history <- function(drink){
+  update_history <- function(){
     person <- input$person
     drinks_history <- read.csv(filename, stringsAsFactors = FALSE, header = TRUE)
     time_passed <- Sys.time() - started_game_at
-    new_drinks <-  c(person, drink, time_passed)
+    new_drinks <-  c(person,  time_passed)
     drinks_history <- rbind(drinks_history, new_drinks)
-    colnames(drinks_history) <- c("Person", "Drink", "Time")
+    colnames(drinks_history) <- c("Person",  "Time")
     write.csv(drinks_history, file = filename, row.names = FALSE)
   }
 
@@ -73,7 +72,7 @@ shinyServer(function(input, output) {
   })
 
   output$debug_time <- reactiveText(function(){
-    history <- get_history()
+    history <- get_history(filename)
     max(history$Time)
   })
   
