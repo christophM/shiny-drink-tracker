@@ -18,6 +18,20 @@ plot_history <- function(filename){
   print(direct.label(p, "last.bumpup"))
 }
 
+plot_leaderboard <- function(filename){
+  history <- get_history(filename)
+  
+  ## turn history into count data
+  history_tab <- data.frame(sort(table(history$Person), decreasing = TRUE))
+  colnames(history_tab) <- "count"
+  ## order counts, highest count should be on top
+  history_tab$Person <- factor(x = nrow(history_tab):1, labels = rownames(history_tab)[nrow(history_tab):1])
+  history_tab
+  ## build graphic and print it
+  p <- ggplot(history_tab) + geom_bar(aes(x = Person, y = count), stat = "identity") + coord_flip()
+  print(p)
+}
+
 ## converts the history file to the data.frame needed to plot the timeline
 history_to_timeline <- function(history){
   history$Time <- as.numeric(history$Time)
