@@ -23,14 +23,12 @@ shinyUI(pageWithSidebar(
 
   mainPanel(h3(textOutput("text")) ,
             tabsetPanel(
-              tabPanel("Raw", tableOutput("history")),
               tabPanel("Timeline", plotOutput("timeline")),
+              tabPanel("Leaderboard", plotOutput("leaderboard")),
+              tabPanel("Raw", tableOutput("history")),
               tabPanel("Debug",
                        tableOutput("debug_timeline"),
                        textOutput("debug_time")
-                       ),
-              tabPanel("Leaderboard",
-                       plotOutput("leaderboard")
                        )
               )
             )

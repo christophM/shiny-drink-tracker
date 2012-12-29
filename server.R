@@ -60,9 +60,15 @@ shinyServer(function(input, output) {
   
   output$text <- reactiveText(function() {
     something_happened()
+
+    text <- sample(x = c("Prost", "Cheers", "Salute", "Kanpai", "Gan Bei", "Salud", "Skal", "Serefe"),
+                   size = 1)
+    
     history <- get_history(filename)
     last <- history[nrow(history), "Person"]
-    paste(last, "shall drink")
+    if (any(last %in% persons)) {
+      paste(last, ", ", text, "!", sep = "")
+    } else ""
   })
 
   output$history <- reactiveTable(function(){
@@ -73,15 +79,21 @@ shinyServer(function(input, output) {
     } else  {
       NULL
     }
-
   })
-
+  
+  ## TIMELINE ##################################################################
   output$timeline <- reactivePlot(function(){
     something_happened()
     plot_history(filename)
   })
- 
-  ## DEBUG OUTPUT
+
+  ## LEADERBOARD ###############################################################
+  output$leaderboard <- reactivePlot(function(){
+    something_happened()
+    history <- get_history(filename)
+    barplot(table(history$Person))
+  })
+  ## DEBUG OUTPUT ##############################################################
   output$debug_timeline <- reactiveTable(function(){
     something_happened()
     history_to_timeline(get_history(filename))
@@ -90,14 +102,8 @@ shinyServer(function(input, output) {
   output$debug_time <- reactiveText(function(){
     something_happened()
     history <- get_history(filename)
-   #  max(history$Time)
     str(history)
   })
 
-  output$leaderboard <- reactivePlot(function(){
-    something_happened()
-    history <- get_history(filename)
-    barplot(table(history$Person))
-  })
   
 })
