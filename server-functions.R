@@ -20,6 +20,7 @@ plot_history <- function(filename){
 
 ## converts the history file to the data.frame needed to plot the timeline
 history_to_timeline <- function(history){
+  history$Time <- as.numeric(history$Time)
   ## add count data to data.frame
   history <- ddply(history, .(Person), function(x) {x$count <- 1:nrow(x); x})
   ## add starting point for everyone

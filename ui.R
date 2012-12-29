@@ -7,7 +7,7 @@
 
 ## add choose to persons, because when the game starts the first person in the list does not
 ## automatically drink
-persons <- c("[choose]", persons)
+persons <- c("[choose person]", persons)
 
 # Define UI for miles per gallon application
 shinyUI(pageWithSidebar(
@@ -16,7 +16,7 @@ shinyUI(pageWithSidebar(
   headerPanel("Drink tracker"),
 
   sidebarPanel(
-    selectInput("person", "Choose person", choices = persons),
+    selectInput("person", "", choices = persons),
     br(),
     actionButton("again", "Drink again!")
     ),

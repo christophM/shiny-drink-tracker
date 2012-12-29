@@ -45,7 +45,7 @@ shinyServer(function(input, output) {
 
   
   update_history <- function(){
-    if(input$person != "[choose]"){
+    if(input$person != "[choose person]"){
       history <- get_history(filename)
       time_passed <- Sys.time() - started_game_at
       new_drinks <-  c(input$person,  time_passed)
@@ -60,8 +60,9 @@ shinyServer(function(input, output) {
   
   output$text <- reactiveText(function() {
     something_happened()
-    last_row <- get_history(filename, only_last = TRUE)
-    paste(last_row[1], "shall drink")
+    history <- get_history(filename)
+    last <- history[nrow(history), "Person"]
+    paste(last, "shall drink")
   })
 
   output$history <- reactiveTable(function(){
@@ -79,7 +80,7 @@ shinyServer(function(input, output) {
     something_happened()
     plot_history(filename)
   })
-
+ 
   ## DEBUG OUTPUT
   output$debug_timeline <- reactiveTable(function(){
     something_happened()
