@@ -11,6 +11,7 @@ library("ggplot2")
 ## take time to give a unique filename
 now <- gsub(" ", "_", Sys.time())
 
+## build data.frame
 drinks_history<- matrix(ncol = 2, nrow = 0)
 colnames(drinks_history) <- c("Person",  "Time")
 drinks_history <- as.data.frame(drinks_history)
@@ -30,6 +31,7 @@ shinyServer(function(input, output) {
   ## function which updates everything
   update <- function(){
     input$again
+    input$person
     history <- update_history()
   }
 
@@ -47,31 +49,38 @@ shinyServer(function(input, output) {
   ## data set is updated for every change of person or by hitting "Drink again"
   observe(update)
 
+  ## function which changes if either the person was changed or the again button was pushed
+  ## this function can be called in other reactive functions
+  ## the result is, that the other functions are updated for every change in person / again-button push
+  ## this is so ugly and I feel bad about it
+  something_happened <- reactive(function(){
+    c(input$person, input$again)
+  })
+  
   output$text <- reactiveText(function() {
-    input$again
+    something_happened()
     last_row <- get_history(filename, only_last = TRUE)
     paste(last_row[1], "shall drink")
   })
 
   output$history <- reactiveTable(function(){
-    ## the function shall react if "Drink again" was clicked
-    input$again
+    something_happened()
     history <- get_history(filename)
   })
 
   output$timeline <- reactivePlot(function(){
-    input$again
+    something_happened()
     plot_history(filename)
   })
 
   ## DEBUG OUTPUT
   output$debug_timeline <- reactiveTable(function(){
-    input$person
-    input$again
+    something_happened()
     history_to_timeline(get_history(filename))
   })
 
   output$debug_time <- reactiveText(function(){
+    something_happened()
     history <- get_history(filename)
     max(history$Time)
   })
