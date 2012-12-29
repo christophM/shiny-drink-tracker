@@ -15,7 +15,7 @@ shinyUI(pageWithSidebar(
   sidebarPanel(
     selectInput("person", "Choose person", choices = persons),
     br(),
-    actionButton("again", "Drink!")
+    actionButton("again", "Drink again!")
     ),
 
   mainPanel(h3(textOutput("text")) ,
@@ -24,7 +24,11 @@ shinyUI(pageWithSidebar(
               tabPanel("History", plotOutput("timeline")),
               tabPanel("Debug",
                        tableOutput("debug_timeline"),
-                       textOutput("debug_time"))
+                       textOutput("debug_time")
+                       ),
+              tabPanel("Leaderboard",
+                       plotOutput("leaderboard")
+                       )
               )
             )
 ))

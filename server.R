@@ -84,5 +84,11 @@ shinyServer(function(input, output) {
     history <- get_history(filename)
     max(history$Time)
   })
+
+  output$leaderboard <- reactivePlot(function(){
+    something_happened()
+    history <- get_history(filename)
+    barplot(table(history$Person))
+  })
   
 })
